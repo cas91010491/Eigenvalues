@@ -1,0 +1,4 @@
+pyuic5 eigGUI.ui -o eigGUI5.py
+pyuic5 solutiontab.ui -o solTab5.py
+pyuic4 eigGUI.ui -o eigGUI.py
+pyuic4 solutiontab.ui -o solTab.py
