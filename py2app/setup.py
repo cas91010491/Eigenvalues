@@ -25,6 +25,7 @@ OPTIONS = {'argv_emulation': False,
                               'QtQuick.framework', 'QtPrintSupport.framework'],
            'semi_standalone': True,
            'site_packages': False,
+           'packages': ['billiard', 'bibtexparser'],
            'qt_plugins': ['platforms/libqcocoa.dylib',
                           # 'accessible/libqtaccessiblewidgets.dylib'
                           ],
