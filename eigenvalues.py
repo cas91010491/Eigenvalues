@@ -44,12 +44,13 @@ from longcalc import LongCalculation, pickle_mesh, pickle_solutions
 from tools import tooltips, openDialog, addContextMenu
 from solutiontab import SolutionTab
 
-from dolfin import set_log_level, parameters
+from dolfin import set_log_active, parameters
 parameters['allow_extrapolation'] = True
 # solver will have an option to switch to EIGEN
 # if USE_EIGEN:
 #     parameters['linear_algebra_backend'] = 'Eigen'
-set_log_level(30)
+# set_log_level(50)
+set_log_active(False)
 
 # fix for missing qt plugins in app
 if not QApplication.libraryPaths():
