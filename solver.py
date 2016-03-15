@@ -53,6 +53,7 @@ class Solver:
         self.target = None
         self.wTop = wTop
         self.wBottom = wBottom
+        self.space = None
 
     def refineTo(self, size, upTo=False, edge=False):
         """
@@ -99,7 +100,10 @@ class Solver:
         """ Create a function in the appropriate FEM space. """
         if not self.mesh:
             self.addMesh()
-        return Function(FunctionSpace(self.mesh, 'CG', 1))
+        if not self.space:
+            # space takes a long time to construct
+            self.space = FunctionSpace(self.mesh, 'CG', 1)
+        return Function(self.space)
 
     def addMesh(self, mesh=None):
         """
@@ -362,6 +366,7 @@ def symmetrize(u, d, sym):
     else:
         # one dimension given: reflect
         mesh.coordinates()[:, d[0]] *= -1
+    # FIXME functionspace takes a long time to construct, maybe copy?
     W = FunctionSpace(mesh, 'CG', 1)
     try:
         # testing

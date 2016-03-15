@@ -33,12 +33,19 @@ from __future__ import division
 from math import pi, sin, cos, sqrt, tan
 import numpy as np
 from dolfin import Mesh, MeshEditor, DynamicMeshEditor, RectangleMesh, \
-    UnitSquareMesh, Point, UnitCubeMesh, BoxMesh
+    UnitSquareMesh, Point, UnitCubeMesh, BoxMesh, compile_extension_module
 from mshr import Circle, UnitSphereMesh, generate_mesh, Polygon
 from paramchecker import evaluate, ParamChecker, clip, flatten
 
 np.seterr(divide='ignore', invalid='ignore')
 np.set_printoptions(precision=5, suppress=True)
+
+# compile c++ code
+with open("cpp/buildmesh.cpp", "r") as f:
+    code = f.read()
+
+builder = compile_extension_module(code=code)  # , source_directory="cpp"
+# include_dirs=["."])
 
 
 def CircleMesh(p, r, s):
@@ -1281,6 +1288,16 @@ def convex_hull(points):
 
 
 def build_mesh(cells, vertices):
+    """
+    Assemble a mesh using cells and vertices.
+
+    Using compiled C++ code.
+    """
+    dim = len(vertices[0])
+    return builder.build_mesh(cells.flatten(), vertices.flatten(), dim)[0]
+
+
+def build_mesh_old(cells, vertices):
     """Assemble a mesh object from cells and vertices."""
     mesh = Mesh()
     editor = MeshEditor()
