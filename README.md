@@ -4,11 +4,11 @@ PyQt GUI for Laplace eigenvalue/eigenfunction computations using [FEniCS](http:/
 
 Two and three dimensional domains can be generated, visualized, opened in new window and interactively rotated.
 
-<img source="doc/eig1.png" width="400"/>
+<img src="doc/eig1.png" width="400"/>
 
 Solutions can also be visualized, opened in new windows, and interactively rotated. Level sets can be shown in 2D and 3D, in addition to boundary values in 3D and warp function plots for 2D.
 
-<img source="doc/eig2.png" width="400"/>
+<img src="doc/eig2.png" width="400"/>
 
 ### Requirements
 
