@@ -17,7 +17,7 @@ Solutions can also be visualized, opened in new windows, and interactively rotat
 - Otherwise Python packages `billiard`, and `PyQt4` (or 5) must be installed.
 
 ### Features
-- GUI is independent from solving engine, so it is be possible to run computations without `PyQt`.
+- GUI is independent from solving engine, so it is possible to run computations without `PyQt`.
 - Domain generation supports semi rigid parameters parsing. Most input fileds support valid `python` code, as well as lists of numbers separated by spaces.
 - Domains can be transformed using a large class of mesh transformations, including complex, conformal, and starlike maps.
 - Dirichlet, Neumann, Robin and Steklov boundary conditions are supported. As well as arbitrary mixtures of those, and interior Dirichlet conditions.
