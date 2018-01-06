@@ -156,8 +156,8 @@ class Solver:
         u = TrialFunction(V)
         v = TestFunction(V)
         self.progress("Assembling matrices.")
-        wTop = Expression(self.wTop)
-        wBottom = Expression(self.wBottom)
+        wTop = Expression(self.wTop, degree=self.deg)
+        wBottom = Expression(self.wBottom, degree=self.deg)
 
         #
         # build stiffness matrix form
@@ -260,31 +260,27 @@ class Solver:
         u.vector()[:] = 1
         # area/volume
         # weight from denominator of Rayleigh
-        w = Expression(self.wBottom)
+        w = Expression(self.wBottom, degree=self.deg)
         geometry = {}
         A = geometry['A'] = assemble(u*w*dx)
         # perimeter/surface area
         geometry['P'] = assemble(u*w*ds)
         # center of mass
-        x = Expression('x[0]')
-        y = Expression('x[1]')
+        x = Expression('x[0]', degree=self.deg)
+        y = Expression('x[1]', degree=self.deg)
         cx = assemble(u*x*w*dx)/A
         cy = assemble(u*y*w*dx)/A
         c = [cx, cy]
         if self.dim == 3:
-            z = Expression('x[2]')
+            z = Expression('x[2]', degree=self.deg)
             cz = assemble(u*z*w*dx)/A
             c.append(cz)
         geometry['c'] = c
         # moment of inertia
         if self.dim == 2:
-            f = Expression(
-                "(x[0]-cx)*(x[0]-cx)+(x[1]-cy)*(x[1]-cy)",
-                cx=cx, cy=cy)
+            f = Expression("(x[0]-cx)*(x[0]-cx)+(x[1]-cy)*(x[1]-cy)", cx=cx, cy=cy, degree=self.deg)
         else:
-            f = Expression(
-                "(x[0]-cx)*(x[0]-cx)+(x[1]-cy)*(x[1]-cy)+(x[2]-cz)*(x[2]-cz)",
-                cx=cx, cy=cy, cz=cz)
+            f = Expression("(x[0]-cx)*(x[0]-cx)+(x[1]-cy)*(x[1]-cy)+(x[2]-cz)*(x[2]-cz)", cx=cx, cy=cy, cz=cz, degree=self.deg)
         geometry['I'] = assemble(u*f*w*dx)
         # TODO: implement Gs
         # TODO: implement diameter and inradius
