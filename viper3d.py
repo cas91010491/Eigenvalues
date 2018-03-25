@@ -159,11 +159,11 @@ class Viper3D(object):
             tprop.SetColor(0, 0, 0)
             tprop.ShadowOff()
             outline = vtk.vtkOutlineFilter()
-            outline.SetInput(self.vtkgrid[self.dim])
+            outline.SetInputData(self.vtkgrid[self.dim])
             normals = vtk.vtkPolyDataNormals()
             normals.SetInputConnection(outline.GetOutputPort())
             self.axes = vtk.vtkCubeAxesActor2D()
-            self.axes.SetInput(normals.GetOutput())
+            self.axes.SetInputConnection(normals.GetOutputPort())
             self.axes.SetCamera(ren.GetActiveCamera())
             self.axes.GetProperty().SetColor(0, 0, 0)
             self.axes.SetAxisTitleTextProperty(tprop)
@@ -238,7 +238,7 @@ class Viper3D(object):
     def Contours(self, num, opacity=0.2):
         """Create contours."""
         contour = vtk.vtkMarchingContourFilter()
-        contour.SetInput(self.vtkgrid[self.dim])
+        contour.SetInputData(self.vtkgrid[self.dim])
         r = (self.vrange[1]-self.vrange[0]) / 2.0 / num
         if num == 1:
             contour.SetValue(0, 0)
@@ -249,9 +249,9 @@ class Viper3D(object):
         contour.UseScalarTreeOn()
         contour.Update()
         normals = vtk.vtkPolyDataNormals()
-        normals.SetInput(contour.GetOutput())
+        normals.SetInputConnection(contour.GetOutputPort())
         mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInput(normals.GetOutput())
+        mapper.SetInputConnection(normals.GetOutputPort())
         mapper.SetLookupTable(self.lut)
         # bw contours are barely visible without this modification
         # also account for flip
@@ -272,14 +272,14 @@ class Viper3D(object):
     def MeshFunction(self, dim, opacity=1, lut=None, min=0, max=1):
         """Create colored mesh."""
         domain = vtk.vtkGeometryFilter()
-        domain.SetInput(self.vtkgrid[dim])
+        domain.SetInputData(self.vtkgrid[dim])
         # domain.MergingOff()
         domain.Update()
         normals = vtk.vtkPolyDataNormals()
-        normals.SetInput(domain.GetOutput())
+        normals.SetInputConnection(domain.GetOutputPort())
         # mapper for domain
         mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInput(normals.GetOutput())
+        mapper.SetInputConnection(normals.GetOutputPort())
         # use cell values for edge and face functions, but not cell functions
         if dim < self.dim:
             mapper.SetScalarModeToUseCellData()
@@ -298,18 +298,18 @@ class Viper3D(object):
     def Domain(self, dim, opacity=0.2, lut=None, warp=False):
         """Create domain or faces."""
         domain = vtk.vtkGeometryFilter()
-        domain.SetInput(self.vtkgrid[dim])
+        domain.SetInputData(self.vtkgrid[dim])
         domain.Update()
         mapper = vtk.vtkPolyDataMapper()
         if warp:
             warp = vtk.vtkWarpScalar()
-            warp.SetInput(domain.GetOutput())
+            warp.SetInputConnection(domain.GetOutputPort())
             warp.SetScaleFactor(1/2.0/self.vmax)
-            mapper.SetInput(warp.GetOutput())
+            mapper.SetInputConnection(warp.GetOutputPort())
         else:
             normals = vtk.vtkPolyDataNormals()
-            normals.SetInput(domain.GetOutput())
-            mapper.SetInput(normals.GetOutput())
+            normals.SetInputConnection(domain.GetOutputPort())
+            mapper.SetInputConnection(normals.GetOutputPort())
 
         if lut is None:
             lut = self.lut
@@ -333,19 +333,19 @@ class Viper3D(object):
     def Edges(self, opacity=1):
         """Create edges of polytopes."""
         domain = vtk.vtkGeometryFilter()
-        domain.SetInput(self.vtkgrid[self.dim])
+        domain.SetInputData(self.vtkgrid[self.dim])
         domain.Update()
         normals = vtk.vtkPolyDataNormals()
-        normals.SetInput(domain.GetOutput())
+        normals.SetInputConnection(domain.GetOutputPort())
         edges = vtk.vtkFeatureEdges()
-        edges.SetInput(normals.GetOutput())
+        edges.SetInputConnection(normals.GetOutputPort())
         edges.ManifoldEdgesOff()
         edges.BoundaryEdgesOn()
         edges.NonManifoldEdgesOff()
         edges.FeatureEdgesOff()
         edges.SetFeatureAngle(1)
         mapper = vtk.vtkPolyDataMapper()
-        mapper.SetInput(edges.GetOutput())
+        mapper.SetInputConnection(edges.GetOutputPort())
         # if self.mesh.topology().dim()==3:
         mapper.ScalarVisibilityOff()
         # else:
@@ -430,7 +430,7 @@ class Viper3D(object):
         """Save plot as png."""
         # FIXME: retina causes artefacts near edges
         large = vtk.vtkRenderLargeImage()
-        large.SetInput(self.ren)
+        large.SetInputData(self.ren)
         large.SetMagnification(magnify)
         png = vtk.vtkPNGWriter()
         png.SetFileName(filename)
@@ -474,8 +474,7 @@ class Viper3D(object):
             actors.append(self.Domain(0, opacity=0.8))
             actors.append(self.MeshFunction(self.datadim))
         else:
-            actors.append(self.MeshFunction(self.datadim, opacity=1,
-                                            lut=self.blue3D))
+            actors.append(self.MeshFunction(self.datadim, opacity=1, lut=self.blue3D))
             actors.append(self.Domain(1))
             actors.append(self.Edges())
         self.Render(actors)

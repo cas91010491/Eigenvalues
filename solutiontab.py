@@ -172,6 +172,7 @@ class SolutionTab(QWidget, Ui_SolutionTab):
     def on_genPlot_clicked(self):
         """ Generate the plot of the eigenfunction. """
         if self.eigList.currentItem() < 0:
+            print "Nothing to plot! Select an eigenvalue first..."
             return
         lst = self.getSymmetrizations()
         if self.lastItem != self.eigList.currentItem() or \
